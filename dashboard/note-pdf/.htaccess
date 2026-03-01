@@ -1,0 +1,10 @@
+# Block execution of any script in this directory.
+# Only static file serving is allowed.
+<FilesMatch ".+">
+    SetHandler default-handler
+</FilesMatch>
+
+# Deny PHP execution explicitly
+<FilesMatch "\.php$">
+    Require all denied
+</FilesMatch>

@@ -1,7 +1,6 @@
 <!-- manage-insert.php -->
 <?php
 include_once 'security.php';
-session_guard();
 csrf_check();
 
 include_once 'dbCon.php';
@@ -12,6 +11,18 @@ if (isset($_POST['regascus'])) {
     $email    = trim($_POST['email']);
     $password = $_POST['password'];
     $role     = 2;
+
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        echo '<script>alert("Invalid email address.")</script>';
+        echo '<script>window.location="registration.php"</script>';
+        exit;
+    }
+
+    if (strlen($password) < 8) {
+        echo '<script>alert("Password must be at least 8 characters.")</script>';
+        echo '<script>window.location="registration.php"</script>';
+        exit;
+    }
 
     // Check for existing email
     $stmt = $con->prepare("SELECT id FROM `user_info` WHERE email = ?");
@@ -28,11 +39,12 @@ if (isset($_POST['regascus'])) {
         $ins = $con->prepare("INSERT INTO `user_info`(`user_name`, `email`, `password`, `role`) VALUES (?, ?, ?, ?)");
         $ins->bind_param('sssi', $name, $email, $hashed, $role);
         if ($ins->execute()) {
-            echo 'You are registered.';
-            sleep(2);
+            echo '<script>alert("You are registered. Please log in.")</script>';
             echo '<script>window.location="login.php"</script>';
         } else {
-            echo "Error: " . $con->error;
+            error_log('Registration DB error: ' . $con->error);
+            echo '<script>alert("Registration failed. Please try again.")</script>';
+            echo '<script>window.location="registration.php"</script>';
         }
         $ins->close();
     }

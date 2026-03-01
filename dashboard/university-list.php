@@ -1,9 +1,11 @@
 <!-- table-list.php -->
-<?php include 'template/header.php'; 
+<?php
+include '../security.php';
+include 'template/header.php';
 if (!isset($_SESSION['isLoggedIn'])) {
 	echo '<script>window.location="login.php"</script>';
 }
-
+$tok = csrf_token();
 ?>
 	<body>
 		<section class="body">
@@ -71,13 +73,13 @@ if (!isset($_SESSION['isLoggedIn'])) {
 										?>
 										<tr class="gradeX">
 											<td class="center hidden-phone"><?php echo $count; ?></td>
-											<td><?php echo $r['uni_id']; ?></td>
-											<td><?php echo $r['uni_name']; ?></td>
+											<td><?php echo htmlspecialchars($r['uni_id']); ?></td>
+											<td><?php echo htmlspecialchars($r['uni_name']); ?></td>
 											<td class="center hidden-phone">
-												<a href="view-college-list.php?uni_id=<?php echo $r['uni_id']; ?>" class="btn btn-info"  onclick="if (!Done()) return false; ">View Colleges</a>
+												<a href="view-college-list.php?uni_id=<?php echo htmlspecialchars($r['uni_id']); ?>" class="btn btn-info"  onclick="if (!Done()) return false; ">View Colleges</a>
 											</td>
 											<td class="center hidden-phone">
-												<a href="delete-university.php?uni_id=<?php echo $r['uni_id']; ?>" class="btn btn-danger"  onclick="if (!Done()) return false; ">Delete University</a>
+												<a href="delete-university.php?uni_id=<?php echo htmlspecialchars($r['uni_id']); ?>&_token=<?php echo $tok ?>" class="btn btn-danger"  onclick="if (!Done()) return false; ">Delete University</a>
 											</td>
 										</tr>
 										<?php $count++; } ?>

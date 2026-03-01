@@ -51,42 +51,72 @@
 
                 if (isset($_POST['save'])) {
                   csrf_check();
-                  $fullname = trim($_POST['fullname']);
-                  $email    = trim($_POST['email']);
-                  $password = $_POST['password'];
-                  $hashed   = password_hash($password, PASSWORD_DEFAULT);
+                  $fullname    = trim($_POST['fullname']);
+                  $email       = trim($_POST['email']);
+                  $password    = $_POST['password'];
+                  $re_password = $_POST['re_password'];
+                  $current_pw  = $_POST['current_password'];
 
-                  $upd = $con->prepare("UPDATE `user_info` SET `user_name`=?, `email`=?, `password`=? WHERE `id`=?");
-                  $upd->bind_param('sssi', $fullname, $email, $hashed, $res_id);
-                  if ($upd->execute()) {
-                    echo '<script>alert("Account has been updated.")</script>';
+                  // Verify current password before allowing any change
+                  if (!password_verify($current_pw, $row['password'])) {
+                    echo '<script>alert("Current password is incorrect.")</script>';
                     echo '<script>window.location="profile.php"</script>';
+                  } elseif (strlen($password) < 8) {
+                    echo '<script>alert("New password must be at least 8 characters.")</script>';
+                    echo '<script>window.location="profile.php"</script>';
+                  } elseif ($password !== $re_password) {
+                    echo '<script>alert("Passwords do not match.")</script>';
+                    echo '<script>window.location="profile.php"</script>';
+                  } else {
+                    $hashed = password_hash($password, PASSWORD_DEFAULT);
+                    $upd = $con->prepare("UPDATE `user_info` SET `user_name`=?, `email`=?, `password`=? WHERE `id`=?");
+                    $upd->bind_param('sssi', $fullname, $email, $hashed, $res_id);
+                    if ($upd->execute()) {
+                      echo '<script>alert("Account has been updated.")</script>';
+                      echo '<script>window.location="profile.php"</script>';
+                    }
+                    $upd->close();
                   }
-                  $upd->close();
                 }
 
                 if (isset($_POST['savephoto'])) {
                   csrf_check();
-                  $targetDirectory = "user-image/";
-                  $file_name = $_FILES['image']['name'];
-                  $file_tmp  = $_FILES['image']['tmp_name'];
-                  $extension = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
-
-                  if ($extension == "jpg" || $extension == "png" || $extension == "jpeg") {
-                    $safe_name = $res_id . '_' . basename($file_name);
-                    move_uploaded_file($file_tmp, $targetDirectory . $safe_name);
-                    $upd = $con->prepare("UPDATE `user_info` SET `p_image`=? WHERE `id`=?");
-                    $upd->bind_param('si', $safe_name, $res_id);
-                    if ($upd->execute()) {
-                      echo '<script>alert("Photo has been updated.")</script>';
-                      echo '<script>window.location="profile.php"</script>';
-                    } else {
-                      echo "Error: " . $con->error;
-                    }
-                    $upd->close();
-                  } else {
-                    echo '<script>alert("Required JPG, PNG or JPEG in image field.")</script>';
+                  if (!isset($_FILES['image']) || $_FILES['image']['error'] !== UPLOAD_ERR_OK) {
+                    echo '<script>alert("No file uploaded or upload error.")</script>';
                     echo '<script>window.location="profile.php"</script>';
+                  } else {
+                    $targetDirectory = "user-image/";
+                    $file_name = $_FILES['image']['name'];
+                    $file_tmp  = $_FILES['image']['tmp_name'];
+                    $extension = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
+
+                    // Verify actual MIME type — extension alone is not trustworthy
+                    $finfo       = new finfo(FILEINFO_MIME_TYPE);
+                    $mimeType    = $finfo->file($file_tmp);
+                    $allowedMime = ['image/jpeg', 'image/png'];
+
+                    if (in_array($mimeType, $allowedMime) && in_array($extension, ['jpg', 'jpeg', 'png'])) {
+                      $safe_name = $res_id . '_' . basename($file_name);
+                      if (!move_uploaded_file($file_tmp, $targetDirectory . $safe_name)) {
+                        echo '<script>alert("Failed to save image. Check server permissions.")</script>';
+                        echo '<script>window.location="profile.php"</script>';
+                      } else {
+                        $upd = $con->prepare("UPDATE `user_info` SET `p_image`=? WHERE `id`=?");
+                        $upd->bind_param('si', $safe_name, $res_id);
+                        if ($upd->execute()) {
+                          echo '<script>alert("Photo has been updated.")</script>';
+                          echo '<script>window.location="profile.php"</script>';
+                        } else {
+                          error_log('Profile photo DB error: ' . $con->error);
+                          echo '<script>alert("Database error. Please try again.")</script>';
+                          echo '<script>window.location="profile.php"</script>';
+                        }
+                        $upd->close();
+                      }
+                    } else {
+                      echo '<script>alert("Required JPG or PNG image file.")</script>';
+                      echo '<script>window.location="profile.php"</script>';
+                    }
                   }
                 }
                  ?>
@@ -152,10 +182,20 @@
 
                <div class="form-group">
                 <div class="col-md-7">
+                  <label class="col-md-4 control-label" for="CustomerContact">Current Password:</label>
+
+                  <div class="col-md-8">
+                     <input type="password" name="current_password" class="form-control" required="" placeholder="Current Password">
+                  </div>
+                </div>
+              </div>
+
+               <div class="form-group">
+                <div class="col-md-7">
                   <label class="col-md-4 control-label" for="CustomerContact">New Password:</label>
 
                   <div class="col-md-8">
-                     <input type="password" name="password" class="form-control" required="" placeholder="New Password">
+                     <input type="password" name="password" class="form-control" required="" placeholder="New Password (min 8 chars)">
                   </div>
                 </div>
               </div>

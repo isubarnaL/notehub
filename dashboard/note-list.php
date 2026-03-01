@@ -1,10 +1,8 @@
-<!-- table-list.php -->
+﻿<!-- table-list.php -->
 <?php
 include '../security.php';
+admin_guard();
 include 'template/header.php';
-if (!isset($_SESSION['isLoggedIn'])) {
-	echo '<script>window.location="login.php"</script>';
-}
 $tok = csrf_token();
 
 ?>
@@ -86,12 +84,12 @@ $tok = csrf_token();
 										?>
 										<tr class="gradeX">
 											<td class="center hidden-phone"><?php echo $count; ?></td>
-											<td class="center hidden-phone"><?php echo $r['uni_name']; ?></td>
-											<td><?php echo $r['depart_id']; ?></td>
-											<td><?php echo $r['college_name']; ?></td>
-											<td><?php echo $r['semester']; ?></td>
-											<td><?php echo $r['subject_name']; ?></td>
-											<td><?php echo $r['notemaker_name']; ?></td>
+											<td class="center hidden-phone"><?php echo htmlspecialchars($r['uni_name']); ?></td>
+											<td><?php echo htmlspecialchars($r['depart_id']); ?></td>
+											<td><?php echo htmlspecialchars($r['college_name']); ?></td>
+											<td><?php echo htmlspecialchars($r['semester']); ?></td>
+											<td><?php echo htmlspecialchars($r['subject_name']); ?></td>
+											<td><?php echo htmlspecialchars($r['notemaker_name']); ?></td>
 											<td><?php 
 													$status = $r['approved_status'];
                                                 
@@ -101,10 +99,10 @@ $tok = csrf_token();
 												<?php }else{ ?>
 												<a href="approve-reject.php?approve_id=1&note_id=<?php echo $r['note_id'] ?>&_token=<?php echo $tok ?>" class="text-danger" onclick="if (!Done()) return false; ">Not Approved</a>	
 												<?php } ?></td>
-											<td><?php echo $r['note']; ?></td>
+											<td><?php echo htmlspecialchars($r['note']); ?></td>
 
 											<td class="center hidden-phone">
-												<a href="note-pdf/<?php echo $r['note']; ?>" target="_blank" class="btn btn-primary">View</a>
+												<a href="note-pdf/<?php echo htmlspecialchars($r['note']); ?>" target="_blank" class="btn btn-primary">View</a>
 											</td>
 											<td class="center hidden-phone">
 												<a href="delete-note.php?note_id=<?php echo $r['note_id']; ?>&_token=<?php echo $tok ?>" class="btn btn-danger">Delete</a>

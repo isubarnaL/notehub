@@ -1,9 +1,12 @@
 <!-- table-list.php -->
-<?php include 'template/header.php'; 
+<?php
+include '../security.php';
+include 'template/header.php';
+
 if (!isset($_SESSION['isLoggedIn'])) {
 	echo '<script>window.location="login.php"</script>';
-}
-
+}
+$tok = csrf_token();
 ?>
 	<body>
 		<section class="body">
@@ -70,10 +73,10 @@ if (!isset($_SESSION['isLoggedIn'])) {
 										?>
 										<tr class="gradeX">
 											<td class="center hidden-phone"><?php echo $count; ?></td>
-											<td><?php echo $r['notemaker_id']; ?></td>
-											<td><?php echo $r['notemaker_name']; ?></td>
+											<td><?php echo htmlspecialchars($r['notemaker_id']); ?></td>
+											<td><?php echo htmlspecialchars($r['notemaker_name']); ?></td>
 											<td class="center hidden-phone">
-												<a href="delete-notemaker.php?notemaker_id=<?php echo $r['notemaker_id']; ?>" class="btn btn-danger"  onclick="if (!Done()) return false; ">Delete Notemaker</a>
+												<a href="delete-notemaker.php?notemaker_id=<?php echo htmlspecialchars($r['notemaker_id']); ?>&_token=<?php echo $tok ?>" class="btn btn-danger"  onclick="if (!Done()) return false; ">Delete Notemaker</a>
 											</td>
 										</tr>
 										<?php $count++; } ?>
