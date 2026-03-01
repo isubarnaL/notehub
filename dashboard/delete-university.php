@@ -15,7 +15,9 @@ if (isset($_GET['uni_id'])) {
         echo '<script>alert("DELETED.")</script>';
         echo '<script>window.location="university-list.php"</script>';
     } else {
-        echo "Error: " . $con->error;
+        error_log('DB error in delete-university.php: ' . $con->error);
+        echo '<script>alert("Database error. Please try again.")</script>';
+        echo '<script>window.location.href=window.location.href</script>';
     }
     $stmt->close();
 }

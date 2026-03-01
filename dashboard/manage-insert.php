@@ -16,7 +16,9 @@ if (isset($_POST['adduni'])) {
         echo '<script>alert("New university added successfully")</script>';
         echo '<script>window.location="university-add.php"</script>';
     } else {
-        echo "Error: " . $con->error;
+        error_log('DB error in manage-insert.php: ' . $con->error);
+        echo '<script>alert("Database error. Please try again.")</script>';
+        echo '<script>window.location.href=window.location.href</script>';
     }
     $stmt->close();
 }
@@ -30,7 +32,9 @@ if (isset($_POST['addnotemaker'])) {
         echo '<script>alert("New notemaker added successfully")</script>';
         echo '<script>window.location="notemaker-add.php"</script>';
     } else {
-        echo "Error: " . $con->error;
+        error_log('DB error in manage-insert.php: ' . $con->error);
+        echo '<script>alert("Database error. Please try again.")</script>';
+        echo '<script>window.location.href=window.location.href</script>';
     }
     $stmt->close();
 }

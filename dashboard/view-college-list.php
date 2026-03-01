@@ -1,10 +1,8 @@
 <!-- view-college-list.php -->
 <?php
 include '../security.php';
+admin_guard();
 include 'template/header.php';
-if (!isset($_SESSION['isLoggedIn'])) {
-	echo '<script>window.location="login.php"</script>';
-}
 $tok = csrf_token();
 
 include 'dbCon.php';
@@ -22,7 +20,9 @@ if (isset($_POST['addcollege'])) {
 		echo '<script>alert("College added successfully")</script>';
 		echo '<script>window.location.href="view-college-list.php?uni_id=' . $uni_id . '"</script>';
 	} else {
-		echo "Error: " . $con->error;
+		error_log('DB error: ' . $con->error);
+					echo '<script>alert("Database error. Please try again.")</script>';
+					echo '<script>window.location.href=window.location.href</script>';
 	}
 	$stmt->close();
 }

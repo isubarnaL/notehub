@@ -16,7 +16,9 @@ if (isset($_GET['reject_id'])) {
         echo '<script>alert("Made User.")</script>';
         echo '<script>window.location="index.php"</script>';
     } else {
-        echo "Error: " . $con->error;
+        error_log('DB error in make-admin.php: ' . $con->error);
+        echo '<script>alert("Database error. Please try again.")</script>';
+        echo '<script>window.location.href=window.location.href</script>';
     }
     $stmt->close();
 }
@@ -30,7 +32,9 @@ if (isset($_GET['approve_id'])) {
         echo '<script>alert("Made Admin.")</script>';
         echo '<script>window.location="index.php"</script>';
     } else {
-        echo "Error: " . $con->error;
+        error_log('DB error in make-admin.php: ' . $con->error);
+        echo '<script>alert("Database error. Please try again.")</script>';
+        echo '<script>window.location.href=window.location.href</script>';
     }
     $stmt->close();
 }

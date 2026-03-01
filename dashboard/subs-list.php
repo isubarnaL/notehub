@@ -1,8 +1,5 @@
 <!-- table-list.php -->
-<?php include 'template/header.php'; 
-if (!isset($_SESSION['isLoggedIn'])) {
-	echo '<script>window.location="login.php"</script>';
-}
+<?php include '../security.php'; admin_guard(); include 'template/header.php';
 
 ?>
 	<body>

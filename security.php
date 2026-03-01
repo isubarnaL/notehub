@@ -13,6 +13,11 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+// Security headers — sent once per request before any HTML output
+header('X-Content-Type-Options: nosniff');
+header('X-Frame-Options: SAMEORIGIN');
+header('Referrer-Policy: strict-origin-when-cross-origin');
+
 // Returns the session CSRF token, generating one if not yet set.
 function csrf_token() {
     if (empty($_SESSION['_csrf_token'])) {

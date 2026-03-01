@@ -1,10 +1,8 @@
 <!-- booking-list.php -->
 <?php
 include '../security.php';
+admin_guard();
 include 'template/header.php';
-if (!isset($_SESSION['isLoggedIn'])) {
-	echo '<script>window.location="login.php"</script>';
-}
 $tok = csrf_token();
 ?>
 	<body>
@@ -50,7 +48,6 @@ $tok = csrf_token();
 						
 								<h2 class="panel-title">All Users</h2>
 							</header>
-							<?php if((isset($_SESSION['isLoggedIn']) && $_SESSION['role'] == 1)){ ?>
 							<div class="panel-body">
 								<table class="table table-bordered table-striped mb-none" id="datatable-tabletools" data-swf-path="assets/vendor/jquery-datatables/extras/TableTools/swf/copy_csv_xls_pdf.swf">
 									<thead>
@@ -76,10 +73,10 @@ $tok = csrf_token();
 										?>
 										<tr class="gradeX">
 											<td class="center hidden-phone"><?php echo $count; ?></td>
-											<td><?php echo $r['id']; ?></td>
-											<td><?php echo $r['user_name']; ?></td>
-											<td><?php echo $r['email']; ?></td>
-											<td><?php echo $r['role']; ?></td>
+											<td><?php echo (int)$r['id']; ?></td>
+											<td><?php echo htmlspecialchars($r['user_name']); ?></td>
+											<td><?php echo htmlspecialchars($r['email']); ?></td>
+											<td><?php echo (int)$r['role']; ?></td>
 							<td class="center hidden-phone">
 												<?php 
 													$status = $r['role'];
@@ -97,8 +94,6 @@ $tok = csrf_token();
 									</tbody>
 								</table>
 							</div>
-							<?php }
-else{	echo '<script>window.location="login.php"</script>';}						?>
 						</section>
 						
 						

@@ -19,7 +19,9 @@ if (isset($_GET['subject_id'])) {
         echo '<script>alert("DELETED.")</script>';
         echo '<script>window.location.href="view-subject-list.php?uni_id=' . $uni_id . '"</script>';
     } else {
-        echo "Error: " . $con->error;
+        error_log('DB error in delete-subject.php: ' . $con->error);
+        echo '<script>alert("Database error. Please try again.")</script>';
+        echo '<script>window.location.href=window.location.href</script>';
     }
     $stmt->close();
 }
