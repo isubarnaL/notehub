@@ -1,20 +1,22 @@
 <!-- delete-university.php -->
 <?php
-	if (isset($_GET['uni_id'])) {
-		$uni_id = $_GET['uni_id'];
-		$sql ="DELETE FROM `uni_tables` WHERE uni_id = '$uni_id';";
-		include_once 'dbCon.php';
-		$con = connect();
-		if ($con->query($sql) === TRUE) {
-		echo '<script>alert("DELETED.")</script>'; ?>
-		<script type="text/javascript">
-			var dist = <?php echo $uni_id; ?>;
-		</script>
-<?php		
-		echo '<script>window.location.href ="university-list.php?uni_id=" + dist;</script>';
-		//header("Location: view-chair-list.php?table_id=".$tbl_id."");
-	    } else {
-			echo "Error: " . $sql . "<br>" . $con->error;
-		} 
-	}
+include_once '../security.php';
+admin_guard();
+csrf_check();
+
+include_once 'dbCon.php';
+$con = connect();
+
+if (isset($_GET['uni_id'])) {
+    $uni_id = (int) $_GET['uni_id'];
+    $stmt = $con->prepare("DELETE FROM `uni_tables` WHERE uni_id = ?");
+    $stmt->bind_param('i', $uni_id);
+    if ($stmt->execute()) {
+        echo '<script>alert("DELETED.")</script>';
+        echo '<script>window.location="university-list.php"</script>';
+    } else {
+        echo "Error: " . $con->error;
+    }
+    $stmt->close();
+}
 ?>

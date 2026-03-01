@@ -1,23 +1,26 @@
 <!-- delete-subject.php -->
 <?php
-	if (isset($_GET['subject_id'])) {
-		$id =$_GET['subject_id'];
-		$depart_id =$_GET['depart_id'];
-		$semester =$_GET['semester'];
-		$uni_id = $_GET['uni_id'];
-		$sql ="DELETE FROM `subject_names` WHERE subject_id = '$id' AND semester = '$semester' AND depart_id = '$depart_id';";
-		include_once 'dbCon.php';
-		$con = connect();
-		if ($con->query($sql) === TRUE) {
-		echo '<script>alert("DELETED.")</script>'; ?>
-		<script type="text/javascript">
-			var dist = <?php echo $uni_id; ?>;
-		</script>
-<?php		
-		echo '<script>window.location.href ="view-subject-list.php?uni_id=" + dist;</script>';
-		//header("Location: view-chair-list.php?table_id=".$tbl_id."");
-	    } else {
-			echo "Error: " . $sql . "<br>" . $con->error;
-		} 
-	}
+include_once '../security.php';
+admin_guard();
+csrf_check();
+
+include_once 'dbCon.php';
+$con = connect();
+
+if (isset($_GET['subject_id'])) {
+    $subject_id = (int) $_GET['subject_id'];
+    $depart_id  = (int) $_GET['depart_id'];
+    $semester   = (int) $_GET['semester'];
+    $uni_id     = (int) $_GET['uni_id'];
+
+    $stmt = $con->prepare("DELETE FROM `subject_names` WHERE subject_id = ? AND semester = ? AND depart_id = ?");
+    $stmt->bind_param('iii', $subject_id, $semester, $depart_id);
+    if ($stmt->execute()) {
+        echo '<script>alert("DELETED.")</script>';
+        echo '<script>window.location.href="view-subject-list.php?uni_id=' . $uni_id . '"</script>';
+    } else {
+        echo "Error: " . $con->error;
+    }
+    $stmt->close();
+}
 ?>

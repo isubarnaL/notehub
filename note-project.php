@@ -1,24 +1,27 @@
   <!-- Note Projects-->
         <section class="projects-section bg-black" id="project">
             <div class="container">
-		 <?php 
+	 <?php
       include_once 'dbCon.php';
       $con = connect();
-      if (isset($_POST['subjsearch'])) {
-        $uni_id = $_POST['uni_id'];	
-		$depart_id = $_POST['depart_id'];
-		$subject_id = $_POST['subject_id'];
-		$semester = $_POST['semester'];
-		
-		
-  $subjectSQL = "SELECT * FROM note_list WHERE uni_id = '$uni_id' AND depart_id = '$depart_id' AND semester = '$semester' AND subject_id = '$subject_id';";
-  $subjectResult = $con->query($subjectSQL);
 
-  if ($subjectResult->num_rows <= 0) {
+      // --- Search by Subject ---
+      if (isset($_POST['subjsearch'])) {
+        $uni_id     = $_POST['uni_id'];
+        $depart_id  = $_POST['depart_id'];
+        $subject_id = $_POST['subject_id'];
+        $semester   = $_POST['semester'];
+
+        $stmt = $con->prepare("SELECT * FROM note_list WHERE uni_id = ? AND depart_id = ? AND semester = ? AND subject_id = ?");
+        $stmt->bind_param('ssss', $uni_id, $depart_id, $semester, $subject_id);
+        $stmt->execute();
+        $subjectResult = $stmt->get_result();
+        $stmt->close();
+
+        if ($subjectResult->num_rows <= 0) {
 	   ?>
 	   <center>
 	   <h1 class="text-white">Oops! Sorry, No Notes Found.</h1>
-	   
 	   <br><br>
 	   <a href="javascript:history.back()" class="btn btn-danger"><i class="fa fa-backward" aria-hidden="true"></i> Go Back</a>
 	   <br><br><h5 class="text-warning"><center>OR<br>
@@ -26,247 +29,233 @@
 	   </h5><br>
 	   <p class="text-white">To Get Your Notes When we Upload em : <a href="#signup" class="btn btn-outline-info btn-sm js-scroll-trigger">Subscribe</a></p></center>
 	   <?php
-    
-  }
-  else{
-    $SQL = "SELECT * FROM note_list 
-	JOIN `subject_names` ON note_list.subject_id=subject_names.subject_id 
-										JOIN `notemaker_tables` ON note_list.notemaker_id=notemaker_tables.notemaker_id
-										JOIN `depart_tables` ON note_list.depart_id=depart_tables.depart_id
-										JOIN `semester` ON note_list.semester=semester.semester
-										JOIN `uni_tables` ON note_list.uni_id=uni_tables.uni_id
-	WHERE note_list.uni_id = '$uni_id' AND note_list.depart_id = '$depart_id' AND note_list.semester = '$semester' AND note_list.subject_id = '$subject_id';";
-    $result = $con->query($SQL);
-				foreach ($result as $r) {
-					?>
-					 <h1 class="text-white">Notes For <?php echo $r['uni_name']; ?> University <?php echo $r['depart_name']; ?> Department <?php echo $r['subject_name']; ?> <?php echo $r['sem_name']; ?> Semester</h1><br>
-				
+        } else {
+          $stmt2 = $con->prepare("SELECT * FROM note_list
+            JOIN `subject_names`    ON note_list.subject_id   = subject_names.subject_id
+            JOIN `notemaker_tables` ON note_list.notemaker_id  = notemaker_tables.notemaker_id
+            JOIN `depart_tables`    ON note_list.depart_id     = depart_tables.depart_id
+            JOIN `semester`         ON note_list.semester       = semester.semester
+            JOIN `uni_tables`       ON note_list.uni_id         = uni_tables.uni_id
+            WHERE note_list.uni_id = ? AND note_list.depart_id = ? AND note_list.semester = ? AND note_list.subject_id = ?");
+          $stmt2->bind_param('ssss', $uni_id, $depart_id, $semester, $subject_id);
+          $stmt2->execute();
+          $result = $stmt2->get_result();
+          $stmt2->close();
+          foreach ($result as $r) { ?>
+					 <h1 class="text-white">Notes For <?php echo htmlspecialchars($r['uni_name']); ?> University <?php echo htmlspecialchars($r['depart_name']); ?> Department <?php echo htmlspecialchars($r['subject_name']); ?> <?php echo htmlspecialchars($r['sem_name']); ?> Semester</h1><br>
+
 					 <div class="row align-items-center no-gutters mb-4 mb-lg-5">
-                    <div class="col-xl-8 col-lg-7"> <iframe id="pdf-js-viewer" src="dashboard/note-pdf/<?php echo $r['note']; ?>" title="webviewer" frameborder="0" width="90%" height="600"></iframe></div>
+                    <div class="col-xl-8 col-lg-7"> <iframe id="pdf-js-viewer" src="dashboard/note-pdf/<?php echo htmlspecialchars($r['note']); ?>" title="webviewer" frameborder="0" width="90%" height="600"></iframe></div>
 					 <div class="col-xl-4 col-lg-5">
                         <div class="featured-text text-center text-lg-left">
-						 <p class="text-white"> <?php echo $r['uni_name']; ?> University <br><?php echo $r['depart_name']; ?> Department<br><?php echo $r['subject_name']; ?> Subject<br> <?php echo $r['sem_name']; ?> Semester<br>By:<?php echo $r['notemaker_name']; ?><br>Approved Status:<?php 
+						 <p class="text-white"> <?php echo htmlspecialchars($r['uni_name']); ?> University <br><?php echo htmlspecialchars($r['depart_name']); ?> Department<br><?php echo htmlspecialchars($r['subject_name']); ?> Subject<br> <?php echo htmlspecialchars($r['sem_name']); ?> Semester<br>By:<?php echo htmlspecialchars($r['notemaker_name']); ?><br>Approved Status:<?php
 													$status = $r['approved_status'];
-                                                
-													if ($status == 1) {
-												?>
+                                                if ($status == 1) { ?>
 												<a href="#" class="text-success" data-toggle="tooltip" data-placement="top" title="This note is approved by admins.">Approved</a>
-												<?php }else{ ?>
-												<a href="#" class="text-danger" data-toggle="tooltip" data-placement="top" title="This note's not yet approved by admins.">Not Approved</a>	
+												<?php } else { ?>
+												<a href="#" class="text-danger" data-toggle="tooltip" data-placement="top" title="This note's not yet approved by admins.">Not Approved</a>
 												<?php } ?>
 											</p>
 <div class="form-group">
 <div class="text-white">Share This Note:</div>
-    <input type="text" class="form-control text-white" id="exampleInputEmail1" value="notehub.com/notes.php?note_id=<?php echo $r['note_id'];?>"readonly>
+    <input type="text" class="form-control text-white" value="notehub.com/notes.php?note_id=<?php echo htmlspecialchars($r['note_id']); ?>" readonly>
   </div>
-				<a href="dashboard/note-pdf/<?php echo $r['note']; ?>" target="_blank" class="btn btn-success">FullScreen</a><br><br><br><br><br><br><br></div></div>
+				<a href="dashboard/note-pdf/<?php echo htmlspecialchars($r['note']); ?>" target="_blank" class="btn btn-success">FullScreen</a><br><br><br><br><br><br><br></div></div>
             </div>
 			<hr style="border-width:2;color:white;background-color:white"><br>
-				<?php
- }
-    } 
-    
-  }
+				<?php } }
+      }
  ?>
-  <?php 
+
+  <?php
       include_once 'dbCon.php';
       $con = connect();
-      if (isset($_POST['clzsearch'])) {
-        $uni_id = $_POST['uni_id'];
-		$college_id = $_POST['college_id'];
-		$depart_id = $_POST['depart_id'];
-	
-		$semester = $_POST['semester'];
-		
-		
-  $collegeSQL = "SELECT * FROM note_list WHERE uni_id = '$uni_id' AND depart_id = '$depart_id' AND semester = '$semester' AND college_id = '$college_id';";
-  $collegeResult = $con->query($collegeSQL);
 
-  if ($collegeResult->num_rows <= 0) {
+      // --- Search by College ---
+      if (isset($_POST['clzsearch'])) {
+        $uni_id     = $_POST['uni_id'];
+        $college_id = $_POST['college_id'];
+        $depart_id  = $_POST['depart_id'];
+        $semester   = $_POST['semester'];
+
+        $stmt = $con->prepare("SELECT * FROM note_list WHERE uni_id = ? AND depart_id = ? AND semester = ? AND college_id = ?");
+        $stmt->bind_param('ssss', $uni_id, $depart_id, $semester, $college_id);
+        $stmt->execute();
+        $collegeResult = $stmt->get_result();
+        $stmt->close();
+
+        if ($collegeResult->num_rows <= 0) {
 	   ?>
 	   <center><h1 class="text-white">Oops! Sorry, No Notes Found.</h1>
-	   
 	   <br><br>
 	   <a href="javascript:history.back()" class="btn btn-danger"><i class="fa fa-backward" aria-hidden="true"></i> Go Back</a>
-	   
 	  <br><br>
 	   <h5 class="text-warning">OR<br>
 	   <i class="fa fa-chevron-down" aria-hidden="true"></i>
 	   </h5><br>
 	   <p class="text-white">To Get Your Notes When we Upload em : <a href="#signup" class="btn btn-outline-info btn-sm js-scroll-trigger">Subscribe</a></p></center>
 	   <?php
+        } else {
+          $stmt2 = $con->prepare("SELECT * FROM note_list
+            JOIN `subject_names`    ON note_list.subject_id   = subject_names.subject_id
+            JOIN `notemaker_tables` ON note_list.notemaker_id  = notemaker_tables.notemaker_id
+            JOIN `depart_tables`    ON note_list.depart_id     = depart_tables.depart_id
+            JOIN `semester`         ON note_list.semester       = semester.semester
+            JOIN `uni_tables`       ON note_list.uni_id         = uni_tables.uni_id
+            JOIN `college_names`    ON note_list.college_id     = college_names.college_id
+            WHERE note_list.uni_id = ? AND note_list.depart_id = ? AND note_list.semester = ? AND note_list.college_id = ?");
+          $stmt2->bind_param('ssss', $uni_id, $depart_id, $semester, $college_id);
+          $stmt2->execute();
+          $result = $stmt2->get_result();
+          $stmt2->close();
+          foreach ($result as $r) { ?>
+					<h1 class="text-white">Note Results For <?php echo htmlspecialchars($r['uni_name']); ?> University <?php echo htmlspecialchars($r['depart_name']); ?> Department <?php echo htmlspecialchars($r['college_name']); ?> College <?php echo htmlspecialchars($r['sem_name']); ?> Semester</h1><br>
 
-  }else{
-    $SQL = "SELECT * FROM note_list JOIN `subject_names` ON note_list.subject_id=subject_names.subject_id 
-										JOIN `notemaker_tables` ON note_list.notemaker_id=notemaker_tables.notemaker_id
-										JOIN `depart_tables` ON note_list.depart_id=depart_tables.depart_id
-										JOIN `semester` ON note_list.semester=semester.semester
-										JOIN `uni_tables` ON note_list.uni_id=uni_tables.uni_id
-										JOIN `college_names` ON note_list.college_id=college_names.college_id 
-										WHERE note_list.uni_id = '$uni_id' AND note_list.depart_id = '$depart_id' AND note_list.semester = '$semester' AND note_list.college_id = '$college_id';";
-    $result = $con->query($SQL);	
-				foreach ($result as $r) {
-					?>
-					<h1 class="text-white">Note Results For <?php echo $r['uni_name']; ?> University <?php echo $r['depart_name']; ?> Department <?php echo $r['college_name']; ?> College <?php echo $r['sem_name']; ?> Semester</h1><br>
-				
 					<div class="row align-items-center no-gutters mb-4 mb-lg-5">
-                    <div class="col-xl-8 col-lg-7"> <iframe id="pdf-js-viewer" src="dashboard/note-pdf/<?php echo $r['note']; ?>" title="webviewer" frameborder="0" width="90%" height="600"></iframe></div>
+                    <div class="col-xl-8 col-lg-7"> <iframe id="pdf-js-viewer" src="dashboard/note-pdf/<?php echo htmlspecialchars($r['note']); ?>" title="webviewer" frameborder="0" width="90%" height="600"></iframe></div>
 					 <div class="col-xl-4 col-lg-5">
                         <div class="featured-text text-center text-lg-left">
-						 <p class="text-white"> <?php echo $r['uni_name']; ?> University <br><?php echo $r['depart_name']; ?> Department<br><?php echo $r['subject_name']; ?> Subject<br> <?php echo $r['sem_name']; ?> Semester<br>By:<?php echo $r['notemaker_name']; ?><br>Approved Status:<?php 
+						 <p class="text-white"> <?php echo htmlspecialchars($r['uni_name']); ?> University <br><?php echo htmlspecialchars($r['depart_name']); ?> Department<br><?php echo htmlspecialchars($r['subject_name']); ?> Subject<br> <?php echo htmlspecialchars($r['sem_name']); ?> Semester<br>By:<?php echo htmlspecialchars($r['notemaker_name']); ?><br>Approved Status:<?php
 													$status = $r['approved_status'];
-                                                
-													if ($status == 1) {
-												?>
+                                                if ($status == 1) { ?>
 												<a href="#" class="text-success" data-toggle="tooltip" data-placement="top" title="This note is approved by admins.">Approved</a>
-												<?php }else{ ?>
-												<a href="#" class="text-danger" data-toggle="tooltip" data-placement="top" title="This note's not yet approved by admins.">Not Approved</a>	
+												<?php } else { ?>
+												<a href="#" class="text-danger" data-toggle="tooltip" data-placement="top" title="This note's not yet approved by admins.">Not Approved</a>
 												<?php } ?>
 											</p>
 <div class="form-group">
 <div class="text-white">Share This Note:</div>
-    <input type="text" class="form-control text-white" id="exampleInputEmail1" value="notehub.com/notes.php?note_id=<?php echo $r['note_id'];?>"readonly>
+    <input type="text" class="form-control text-white" value="notehub.com/notes.php?note_id=<?php echo htmlspecialchars($r['note_id']); ?>" readonly>
   </div>
-				<a href="dashboard/note-pdf/<?php echo $r['note']; ?>" target="_blank" class="btn btn-success">FullScreen</a><br><br><br><br><br><br><br></div></div>
+				<a href="dashboard/note-pdf/<?php echo htmlspecialchars($r['note']); ?>" target="_blank" class="btn btn-success">FullScreen</a><br><br><br><br><br><br><br></div></div>
             </div>
 			<hr style="border-width:2;color:white;background-color:white"><br>
-				<?php
- }
-    } 
-    
-  }
+				<?php } }
+      }
  ?>
- 
- <?php 
+
+ <?php
       include_once 'dbCon.php';
       $con = connect();
+
+      // --- Search by Notemaker ---
       if (isset($_POST['ntmkrsearch'])) {
-      
-		$notemaker_id = $_POST['notemaker_id'];
-		
-  $ntmkrSQL = "SELECT * FROM note_list WHERE notemaker_id = '$notemaker_id';";
-  $ntmkrResult = $con->query($ntmkrSQL);
+        $notemaker_id = $_POST['notemaker_id'];
 
-  if ($ntmkrResult->num_rows <= 0) {
+        $stmt = $con->prepare("SELECT * FROM note_list WHERE notemaker_id = ?");
+        $stmt->bind_param('s', $notemaker_id);
+        $stmt->execute();
+        $ntmkrResult = $stmt->get_result();
+        $stmt->close();
+
+        if ($ntmkrResult->num_rows <= 0) {
 	   ?>
 	   <center><h1 class="text-white">Oops! Sorry, No Notes Found.</h1>
 	   <br><br>
 	   <a href="javascript:history.back()" class="btn btn-danger"><i class="fa fa-backward" aria-hidden="true"></i> Go Back</a>
-	 
 	   <br><br>
 	   <h5 class="text-warning">OR<br>
 	   <i class="fa fa-chevron-down" aria-hidden="true"></i>
 	   </h5>
 	   <p class="text-white">To Get Your Notes When we Upload em : <a href="#signup" class="btn btn-outline-info btn-sm js-scroll-trigger">Subscribe</a></p></center>
 	   <?php
-  }else{
-    $SQL = "SELECT * FROM note_list 
-	JOIN `depart_tables` ON note_list.depart_id=depart_tables.depart_id 
-	JOIN `uni_tables` ON note_list.uni_id=uni_tables.uni_id 
-	JOIN `semester` ON note_list.semester=semester.semester
-	JOIN `subject_names` ON note_list.subject_id=subject_names.subject_id 
-	JOIN `notemaker_tables` ON note_list.notemaker_id=notemaker_tables.notemaker_id 
-	WHERE note_list.notemaker_id = '$notemaker_id';";
-    $result = $con->query($SQL);
-    foreach ($result as $r) {
-					?>
-					 <h1 class="text-white">Notes By <?php echo $r['notemaker_name']; ?></h1><br>
+        } else {
+          $stmt2 = $con->prepare("SELECT * FROM note_list
+            JOIN `depart_tables`    ON note_list.depart_id     = depart_tables.depart_id
+            JOIN `uni_tables`       ON note_list.uni_id         = uni_tables.uni_id
+            JOIN `semester`         ON note_list.semester       = semester.semester
+            JOIN `subject_names`    ON note_list.subject_id    = subject_names.subject_id
+            JOIN `notemaker_tables` ON note_list.notemaker_id  = notemaker_tables.notemaker_id
+            WHERE note_list.notemaker_id = ?");
+          $stmt2->bind_param('s', $notemaker_id);
+          $stmt2->execute();
+          $result = $stmt2->get_result();
+          $stmt2->close();
+          foreach ($result as $r) { ?>
+					 <h1 class="text-white">Notes By <?php echo htmlspecialchars($r['notemaker_name']); ?></h1><br>
 					 <div class="row align-items-center no-gutters mb-4 mb-lg-5">
-                    <div class="col-xl-8 col-lg-7"> <iframe id="pdf-js-viewer" src="dashboard/note-pdf/<?php echo $r['note']; ?>" title="webviewer" frameborder="0" width="90%" height="600"></iframe></div>
+                    <div class="col-xl-8 col-lg-7"> <iframe id="pdf-js-viewer" src="dashboard/note-pdf/<?php echo htmlspecialchars($r['note']); ?>" title="webviewer" frameborder="0" width="90%" height="600"></iframe></div>
 					 <div class="col-xl-4 col-lg-5">
                         <div class="featured-text text-center text-lg-left">
-						 <p class="text-white"> <?php echo $r['uni_name']; ?> University <br><?php echo $r['depart_name']; ?> Department<br><?php echo $r['subject_name']; ?> Subject<br> <?php echo $r['sem_name']; ?> Semester<br>By:<?php echo $r['notemaker_name']; ?><br>Approved Status:<?php 
+						 <p class="text-white"> <?php echo htmlspecialchars($r['uni_name']); ?> University <br><?php echo htmlspecialchars($r['depart_name']); ?> Department<br><?php echo htmlspecialchars($r['subject_name']); ?> Subject<br> <?php echo htmlspecialchars($r['sem_name']); ?> Semester<br>By:<?php echo htmlspecialchars($r['notemaker_name']); ?><br>Approved Status:<?php
 													$status = $r['approved_status'];
-                                                
-													if ($status == 1) {
-												?>
+                                                if ($status == 1) { ?>
 												<a href="#" class="text-success" data-toggle="tooltip" data-placement="top" title="This note is approved by admins.">Approved</a>
-												<?php }else{ ?>
-												<a href="#" class="text-danger" data-toggle="tooltip" data-placement="top" title="This note's not yet approved by admins.">Not Approved</a>	
+												<?php } else { ?>
+												<a href="#" class="text-danger" data-toggle="tooltip" data-placement="top" title="This note's not yet approved by admins.">Not Approved</a>
 												<?php } ?>
 											</p>
 <div class="form-group">
 <div class="text-white">Share This Note:</div>
-    <input type="text" class="form-control text-white" id="exampleInputEmail1" value="notehub.com/notes.php?note_id=<?php echo $r['note_id'];?>"readonly>
+    <input type="text" class="form-control text-white" value="notehub.com/notes.php?note_id=<?php echo htmlspecialchars($r['note_id']); ?>" readonly>
   </div>
-				<a href="dashboard/note-pdf/<?php echo $r['note']; ?>" target="_blank" class="btn btn-success">FullScreen</a><br><br><br><br><br><br><br></div></div>
+				<a href="dashboard/note-pdf/<?php echo htmlspecialchars($r['note']); ?>" target="_blank" class="btn btn-success">FullScreen</a><br><br><br><br><br><br><br></div></div>
             </div>
 			<hr style="border-width:2;color:white;background-color:white"><br>
-				<?php
- }
-
-
-    } 
-
-	
-    
-  }
+				<?php } }
+      }
  ?>
 
-<?php 
+<?php
       include_once 'dbCon.php';
       $con = connect();
-      if (isset($_GET['note_id'])) {
-      
-		$notemaker_id = $_GET['note_id'];
-		
-  $ntmkrSQL = "SELECT * FROM note_list WHERE note_id = '$notemaker_id';";
-  $ntmkrResult = $con->query($ntmkrSQL);
 
-  if ($ntmkrResult->num_rows <= 0) {
+      // --- View by note_id (shareable link) ---
+      if (isset($_GET['note_id'])) {
+        $note_id = $_GET['note_id'];
+
+        $stmt = $con->prepare("SELECT * FROM note_list WHERE note_id = ?");
+        $stmt->bind_param('s', $note_id);
+        $stmt->execute();
+        $ntmkrResult = $stmt->get_result();
+        $stmt->close();
+
+        if ($ntmkrResult->num_rows <= 0) {
 	   ?>
 	   <center><h1 class="text-white">Oops! Sorry, No Notes Found.</h1>
 	   <br><br>
 	   <a href="javascript:history.back()" class="btn btn-danger"><i class="fa fa-backward" aria-hidden="true"></i> Go Back</a>
-	 
 	   <br><br>
 	   <h5 class="text-warning">OR<br>
 	   <i class="fa fa-chevron-down" aria-hidden="true"></i>
 	   </h5>
 	   <p class="text-white">To Get Your Notes When we Upload em : <a href="#signup" class="btn btn-outline-info btn-sm js-scroll-trigger">Subscribe</a></p></center>
 	   <?php
-  }else{
-    $SQL = "SELECT * FROM note_list 
-	JOIN `depart_tables` ON note_list.depart_id=depart_tables.depart_id 
-	JOIN `uni_tables` ON note_list.uni_id=uni_tables.uni_id 
-	JOIN `semester` ON note_list.semester=semester.semester
-	JOIN `subject_names` ON note_list.subject_id=subject_names.subject_id 
-	JOIN `notemaker_tables` ON note_list.notemaker_id=notemaker_tables.notemaker_id 
-	WHERE note_list.note_id = '$notemaker_id';";
-    $result = $con->query($SQL);
-    foreach ($result as $r) {
-					?>
-					 <h1 class="text-white">Note of <?php echo $r['subject_name']; ?> By <?php echo $r['notemaker_name']; ?></h1><br>
+        } else {
+          $stmt2 = $con->prepare("SELECT * FROM note_list
+            JOIN `depart_tables`    ON note_list.depart_id     = depart_tables.depart_id
+            JOIN `uni_tables`       ON note_list.uni_id         = uni_tables.uni_id
+            JOIN `semester`         ON note_list.semester       = semester.semester
+            JOIN `subject_names`    ON note_list.subject_id    = subject_names.subject_id
+            JOIN `notemaker_tables` ON note_list.notemaker_id  = notemaker_tables.notemaker_id
+            WHERE note_list.note_id = ?");
+          $stmt2->bind_param('s', $note_id);
+          $stmt2->execute();
+          $result = $stmt2->get_result();
+          $stmt2->close();
+          foreach ($result as $r) { ?>
+					 <h1 class="text-white">Note of <?php echo htmlspecialchars($r['subject_name']); ?> By <?php echo htmlspecialchars($r['notemaker_name']); ?></h1><br>
 					 <div class="row align-items-center no-gutters mb-4 mb-lg-5">
-                    <div class="col-xl-8 col-lg-7"> <iframe id="pdf-js-viewer" src="dashboard/note-pdf/<?php echo $r['note']; ?>" title="webviewer" frameborder="0" width="95%" height="700"></iframe></div>
+                    <div class="col-xl-8 col-lg-7"> <iframe id="pdf-js-viewer" src="dashboard/note-pdf/<?php echo htmlspecialchars($r['note']); ?>" title="webviewer" frameborder="0" width="95%" height="700"></iframe></div>
 					 <div class="col-xl-4 col-lg-5">
                         <div class="featured-text text-center text-lg-left">
-						 <p class="text-white"> <?php echo $r['uni_name']; ?> University <br><?php echo $r['depart_name']; ?> Department<br><?php echo $r['subject_name']; ?> Subject<br> <?php echo $r['sem_name']; ?> Semester<br>By:<?php echo $r['notemaker_name']; ?><br>Approved Status:<?php 
+						 <p class="text-white"> <?php echo htmlspecialchars($r['uni_name']); ?> University <br><?php echo htmlspecialchars($r['depart_name']); ?> Department<br><?php echo htmlspecialchars($r['subject_name']); ?> Subject<br> <?php echo htmlspecialchars($r['sem_name']); ?> Semester<br>By:<?php echo htmlspecialchars($r['notemaker_name']); ?><br>Approved Status:<?php
 													$status = $r['approved_status'];
-                                                
-													if ($status == 1) {
-												?>
+                                                if ($status == 1) { ?>
 												<a href="#" class="text-success" data-toggle="tooltip" data-placement="top" title="This note is approved by admins.">Approved</a>
-												<?php }else{ ?>
-												<a href="#" class="text-danger" data-toggle="tooltip" data-placement="top" title="This note's not yet approved by admins.">Not Approved</a>	
+												<?php } else { ?>
+												<a href="#" class="text-danger" data-toggle="tooltip" data-placement="top" title="This note's not yet approved by admins.">Not Approved</a>
 												<?php } ?>
 											</p>
 <div class="form-group">
 <div class="text-white">Share This Note:</div>
-    <input type="text" class="form-control text-white" id="exampleInputEmail1" value="notehub.com/notes.php?note_id=<?php echo $r['note_id'];?>"readonly>
+    <input type="text" class="form-control text-white" value="notehub.com/notes.php?note_id=<?php echo htmlspecialchars($r['note_id']); ?>" readonly>
   </div>
-				<a href="dashboard/note-pdf/<?php echo $r['note']; ?>" target="_blank" class="btn btn-success">FullScreen</a><br><br><br><br><br><br><br></div></div>
+				<a href="dashboard/note-pdf/<?php echo htmlspecialchars($r['note']); ?>" target="_blank" class="btn btn-success">FullScreen</a><br><br><br><br><br><br><br></div></div>
             </div>
 			<hr style="border-width:2;color:white;background-color:white"><br>
-				<?php
- }
-
-
-    } 
-
-	
-    
-  }
+				<?php } }
+      }
  ?>
 
 
@@ -287,4 +276,3 @@
                     </div>
                 </div>
         </section>
-	    

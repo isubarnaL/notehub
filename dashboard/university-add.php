@@ -1,5 +1,5 @@
 <!-- table-add.php -->
-<?php include 'template/header.php'; 
+<?php include '../security.php'; include 'template/header.php'; 
 if (!isset($_SESSION['isLoggedIn'])) {
 	echo '<script>window.location="login.php"</script>';
 }
@@ -41,6 +41,7 @@ if (!isset($_SESSION['isLoggedIn'])) {
 						<div class="col-md-1"></div>
 						<div class="col-md-10">
 							<form action="manage-insert.php" method="POST" enctype="multipart/form-data">
+							<input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">
 								<section class="panel">
 									<header class="panel-heading">
 										<div class="panel-actions">

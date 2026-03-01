@@ -1,4 +1,5 @@
 
+<?php include 'security.php'; ?>
 <?php include 'template/header-login.php'; ?>
 <body>
 	
@@ -11,7 +12,8 @@
 				
 					<img src="assets/img/3.png" alt="IMG">
 				</div>
-					<form action="manage-insert.php" method="POST" enctype="multipart/form-data">
+					<form action="manage-insert.php" method="POST" enctype="multipart/form-data">
+					<input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">
 					
 					<span class="login100-form-title">
 						Register Yourself						

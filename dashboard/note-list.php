@@ -1,8 +1,11 @@
 <!-- table-list.php -->
-<?php include 'template/header.php'; 
+<?php
+include '../security.php';
+include 'template/header.php';
 if (!isset($_SESSION['isLoggedIn'])) {
 	echo '<script>window.location="login.php"</script>';
 }
+$tok = csrf_token();
 
 ?>
 	<body>
@@ -94,9 +97,9 @@ if (!isset($_SESSION['isLoggedIn'])) {
                                                 
 													if ($status == 1) {
 												?>
-												<a href="approve-reject.php?reject_id=<?php echo $_SESSION['role'] ?>&note_id=<?php echo $r['note_id']?>" class="text-success" onclick="if (!Done()) return false; ">Approved</a>
+												<a href="approve-reject.php?reject_id=1&note_id=<?php echo $r['note_id'] ?>&_token=<?php echo $tok ?>" class="text-success" onclick="if (!Done()) return false; ">Approved</a>
 												<?php }else{ ?>
-												<a href="approve-reject.php?approve_id=<?php $_SESSION['role'] ?>&note_id=<?php echo $r['note_id']?>" class="text-danger" onclick="if (!Done()) return false; ">Not Approved</a>	
+												<a href="approve-reject.php?approve_id=1&note_id=<?php echo $r['note_id'] ?>&_token=<?php echo $tok ?>" class="text-danger" onclick="if (!Done()) return false; ">Not Approved</a>	
 												<?php } ?></td>
 											<td><?php echo $r['note']; ?></td>
 
@@ -104,7 +107,7 @@ if (!isset($_SESSION['isLoggedIn'])) {
 												<a href="note-pdf/<?php echo $r['note']; ?>" target="_blank" class="btn btn-primary">View</a>
 											</td>
 											<td class="center hidden-phone">
-												<a href="delete-note.php?note_id=<?php echo $r['note_id']; ?>" class="btn btn-danger">Delete</a>
+												<a href="delete-note.php?note_id=<?php echo $r['note_id']; ?>&_token=<?php echo $tok ?>" class="btn btn-danger">Delete</a>
 											</td>
 										</tr>
 										<?php $count++; } ?>

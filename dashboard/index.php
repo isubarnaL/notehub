@@ -1,9 +1,11 @@
 <!-- booking-list.php -->
-<?php include 'template/header.php'; 
+<?php
+include '../security.php';
+include 'template/header.php';
 if (!isset($_SESSION['isLoggedIn'])) {
 	echo '<script>window.location="login.php"</script>';
 }
-
+$tok = csrf_token();
 ?>
 	<body>
 		<section class="body">
@@ -84,9 +86,9 @@ if (!isset($_SESSION['isLoggedIn'])) {
                                                 
 													if ($status == 1) {
 												?>
-												<a href="make-admin.php?reject_id=<?php echo $_SESSION['role'] ?>&user_id=<?php echo $r['id']?>" class="btn btn-danger" onclick="if (!Done()) return false; " >make user</a>
+												<a href="make-admin.php?reject_id=1&user_id=<?php echo $r['id'] ?>&_token=<?php echo $tok ?>" class="btn btn-danger" onclick="if (!Done()) return false; " >make user</a>
 												<?php }else{ ?>
-												<a href="make-admin.php?approve_id=<?php echo $_SESSION['role'] ?>&user_id=<?php echo $r['id']?>" class="btn btn-success" onclick="if (!Done()) return false; ">make admin</a>	
+												<a href="make-admin.php?approve_id=1&user_id=<?php echo $r['id'] ?>&_token=<?php echo $tok ?>" class="btn btn-success" onclick="if (!Done()) return false; ">make admin</a>	
 												<?php } ?>
 											</td>
 

@@ -44,6 +44,8 @@
 					</div>
 					<div class="panel-body">
 						<form action="" method="POST">
+						<?php include '../security.php'; ?>
+						<input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">
 							<div class="form-group mb-lg">
 								<label>Email</label>
 								<div class="input-group input-group-icon">
@@ -123,59 +125,43 @@
 
 	</body>
 </html>
-<?php 
-	
-// $password = "123";
-// $ecnpassword= md5($password);
-
-// echo $ecnpassword;
-
+<?php
 	if (isset($_POST['login'])) {
-		
-	$email = $_POST['email'];
-	$password = $_POST['password'];
+		csrf_check();
 
-	//$ecnpassword= md5($password);
+		$email    = $_POST['email'];
+		$password = $_POST['password'];
 
-	include 'dbCon.php';
-	$con = connect();
+		include 'dbCon.php';
+		$con = connect();
 
-	$emailSQL = "SELECT * FROM user_info WHERE email = '$email';";
+		$stmt = $con->prepare("SELECT * FROM user_info WHERE email = ?");
+		$stmt->bind_param('s', $email);
+		$stmt->execute();
+		$result = $stmt->get_result();
 
-	$passwordSQL = "SELECT * FROM user_info WHERE email = '$email' And password = '$password';";
+		if ($result->num_rows <= 0) {
+			echo '<script>alert("This Email Does Not Exist.")</script>';
+			echo '<script>window.location="login.php"</script>';
+		} else {
+			$r = $result->fetch_assoc();
+			if (!password_verify($password, $r['password'])) {
+				echo '<script>alert("This Password is Incorrect.")</script>';
+				echo '<script>window.location="login.php"</script>';
+			} else {
+				$_SESSION['isLoggedIn'] = TRUE;
+				$_SESSION['id']    = $r['id'];
+				$_SESSION['name']  = $r['user_name'];
+				$_SESSION['email'] = $r['email'];
+				$_SESSION['role']  = $r['role'];
 
-	$emailResult = $con->query($emailSQL);
-
-	$passwordResult = $con->query($passwordSQL);
-
-	if ($emailResult->num_rows <= 0) {
-		echo '<script>alert("This Email Does Not Exist.")</script>';
-		echo '<script>window.location="login.php"</script>';
-	}else if ($passwordResult->num_rows <= 0) {
-		echo '<script>alert("This Password is Incorrect.")</script>';
-		echo '<script>window.location="login.php"</script>';
-	}else{
-
-		$_SESSION['isLoggedIn'] = TRUE;
-
-		$SQL = "SELECT * FROM user_info WHERE email = '$email' And password = '$password';";
-
-		$result = $con->query($SQL);
-
-		foreach ($result as $r) {
-			$_SESSION['id'] = $r['id'];
-			$_SESSION['name'] = $r['user_name'];
-			$_SESSION['email'] = $r['email'];
-			$_SESSION['password'] = $r['password'];
-			$_SESSION['role'] = $r['role'];
+				if ($_SESSION['role'] == 1) {
+					echo '<script>window.location="index.php"</script>';
+				} else {
+					echo '<script>window.location="../index.php"</script>';
+				}
+			}
 		}
-		if($_SESSION['role'] == 1){
-			echo '<script>window.location="index.php"</script>';
-		}else{
-			echo '<script>window.location="../index.php"</script>';
-		}
-		
-	}
-
+		$stmt->close();
 	}
 ?>

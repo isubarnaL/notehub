@@ -1,5 +1,5 @@
 <!-- booking-list.php -->
-<?php include 'template/header.php';
+<?php include '../security.php'; include 'template/header.php';
 if (!isset($_SESSION['isLoggedIn'])) {
 	echo '<script>window.location="login.php"</script>';
 }
@@ -60,6 +60,7 @@ if (!isset($_SESSION['isLoggedIn'])) {
                   <div class="col-md-12">
                       
 					  <form action="manage-insert1.php" method="POST" enctype="multipart/form-data" >
+							<input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">
                           <div class="form-group">
                           <select class="form-control " name="uni_name" required="">
                             <option value=""> -Select University- </option>

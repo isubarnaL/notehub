@@ -1,20 +1,22 @@
-<!-- delete-university.php -->
+<!-- delete-note.php -->
 <?php
-	if (isset($_GET['note_id'])) {
-		$note_id = $_GET['note_id'];
-		$sql ="DELETE FROM `note_list` WHERE note_id = '$note_id';";
-		include_once 'dbCon.php';
-		$con = connect();
-		if ($con->query($sql) === TRUE) {
-		echo '<script>alert("DELETED.")</script>'; ?>
-		<script type="text/javascript">
-			var dist = <?php echo $note_id; ?>;
-		</script>
-<?php		
-		echo '<script>window.location.href ="note-list.php?note_id=" + dist;</script>';
-		//header("Location: view-chair-list.php?table_id=".$tbl_id."");
-	    } else {
-			echo "Error: " . $sql . "<br>" . $con->error;
-		} 
-	}
+include_once '../security.php';
+admin_guard();
+csrf_check();
+
+include_once 'dbCon.php';
+$con = connect();
+
+if (isset($_GET['note_id'])) {
+    $note_id = (int) $_GET['note_id'];
+    $stmt = $con->prepare("DELETE FROM `note_list` WHERE note_id = ?");
+    $stmt->bind_param('i', $note_id);
+    if ($stmt->execute()) {
+        echo '<script>alert("DELETED.")</script>';
+        echo '<script>window.location="note-list.php"</script>';
+    } else {
+        echo "Error: " . $con->error;
+    }
+    $stmt->close();
+}
 ?>
