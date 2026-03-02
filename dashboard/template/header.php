@@ -1,4 +1,3 @@
-<?php session_start(); ?>
 <!doctype html>
 <html class="fixed">
 	<head>
@@ -56,9 +55,6 @@
 </script>
 		<script src="assets/vendor/modernizr/modernizr.js"></script>
         <script src="https://unpkg.com/dropzone@6.0.0-beta.1/dist/dropzone-min.js"></script>
-        <script src="/pdf.js"></script>
-		<script src="/simple.js"></script>
-		<script src='/lib/webviewer.min.js'></script>
         <link href="https://unpkg.com/dropzone@6.0.0-beta.1/dist/dropzone.css" rel="stylesheet" type="text/css" />
         <script src="https://kit.fontawesome.com/0340f3d315.js" crossorigin="anonymous"></script>
 	</head>

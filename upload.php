@@ -1,7 +1,7 @@
 <?php
 // Must come before header.php so session starts with hardened cookie params.
 include 'security.php';
-session_guard();   // any logged-in user may upload
+session_guard();
 include 'template/header.php';
 ?>
     <body id="page-top">
@@ -12,6 +12,7 @@ include 'template/header.php';
                 <div class="row justify-content-center">
                     <div class="col-lg-7">
 
+                        <a href="javascript:window.close();" style="position:fixed; top:80px; right:80px; font-size:2.5rem; line-height:1; color:#aaa; text-decoration:none; z-index:9999;">&times;</a>
                         <h2 class="text-white text-center mb-2">Upload Your Notes</h2>
                         <p class="text-white-50 text-center mb-4">
                             Submitted notes are reviewed by admins before going live.

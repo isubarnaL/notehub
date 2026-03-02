@@ -136,13 +136,7 @@ $(document).ready(function(){
                             <div class="d-flex h-100">
                                 <div class="project-text w-100 my-auto text-center text-lg-center">
                                     <h4 class="text-white">PUBLISH YOUR NOTES</h4>
-                                    <p class="mb-0 text-white-50">
-                                        <?php if (!empty($_SESSION['isLoggedIn'])): ?>
-                                            Upload your notes <a href="upload.php" class="text-white">here</a>. They'll go live after admin review.
-                                        <?php else: ?>
-                                            <a href="login.php" class="text-white">Log in</a> to upload your notes.
-                                        <?php endif; ?>
-                                    </p>
+                                    <p class="mb-0 text-white-50">If you want to publish your notes here,please <a class="nav-link js-scroll-trigger" href="#contact">contact</a> us<br>or upload your notes<br><a href="<?php echo empty($_SESSION['isLoggedIn']) ? 'login.php' : 'upload.php'; ?>" <?php if (!empty($_SESSION['isLoggedIn'])): ?>target="_blank"<?php endif; ?>>here</a></p>
                                     <hr class="d-none d-lg-block mb-0 mc-0" />
                                 </div>
                             </div>
