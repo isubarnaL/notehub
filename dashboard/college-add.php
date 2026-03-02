@@ -1,4 +1,3 @@
-<!-- table-add.php -->
 <?php include '../security.php'; admin_guard(); include 'template/header.php';
 
 ?>

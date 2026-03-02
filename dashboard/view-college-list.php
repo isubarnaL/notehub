@@ -1,4 +1,3 @@
-<!-- view-college-list.php -->
 <?php
 include '../security.php';
 admin_guard();

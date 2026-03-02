@@ -1,4 +1,3 @@
-<!-- profile.php -->
 <?php include 'template/header.php';
  if((isset($_SESSION['isLoggedIn']) && $_SESSION['role'] == 1)){ ?>
 

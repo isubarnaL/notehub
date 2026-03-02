@@ -1,4 +1,3 @@
-<!-- delete-subject.php -->
 <?php
 include_once '../security.php';
 admin_guard();

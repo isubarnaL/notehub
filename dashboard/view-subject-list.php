@@ -1,4 +1,3 @@
-<!-- view-subject-list.php -->
 <?php
 include '../security.php';
 admin_guard();

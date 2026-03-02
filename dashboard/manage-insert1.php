@@ -1,4 +1,3 @@
-<!-- manage-insert1.php -->
 <?php
 include_once '../security.php';
 session_guard();

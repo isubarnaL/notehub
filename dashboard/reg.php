@@ -1,4 +1,3 @@
-<!-- booking-list.php -->
 <?php include '../security.php'; admin_guard(); include 'template/header.php';
 
 // Single connection for the whole page; each lookup table queried exactly once.

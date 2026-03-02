@@ -1,8 +1,10 @@
 <!-- Vendor -->
 		<script src="assets/vendor/jquery/jquery.js"></script>
+		<script>window.jQuery || document.write('<script src="https:\/\/code.jquery.com\/jquery-2.1.0.min.js"><\/script>')</script>
 		<script src="assets/vendor/jquery-browser-mobile/jquery.browser.mobile.js"></script>
 		<script src="assets/vendor/bootstrap/js/bootstrap.js"></script>
 		<script src="assets/vendor/nanoscroller/nanoscroller.js"></script>
+		<script>if(window.jQuery && !jQuery.fn.nanoScroller){jQuery.fn.nanoScroller=function(){return this;};}</script>
 		<script src="assets/vendor/bootstrap-datepicker/js/bootstrap-datepicker.js"></script>
 		<script src="assets/vendor/magnific-popup/magnific-popup.js"></script>
 		<script src="assets/vendor/jquery-placeholder/jquery.placeholder.js"></script>
