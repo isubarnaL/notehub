@@ -58,15 +58,15 @@ if (isset($_POST['login'])) {
 
 		<div class="container-login100">
 		 <center><a href="javascript:window.close();"><i class="fa fa-backward" aria-hidden="true"></i>Go Back</a></center>
+			<?php if ($login_error !== ''): ?>
+			<div class="alert alert-danger alert-dismissible" role="alert">
+			  <strong>&emsp;Sorry!</strong> <?php echo htmlspecialchars($login_error); ?>&emsp;
+			  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+			    <span aria-hidden="true">&times;</span>
+			  </button>
+			</div>
+			<?php endif; ?>
 			<div class="wrap-login100">
-				<?php if ($login_error !== ''): ?>
-				<div class="alert alert-danger alert-dismissible" role="alert">
-				  <strong>&emsp;Sorry!</strong> <?php echo htmlspecialchars($login_error); ?>&emsp;
-				  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-				    <span aria-hidden="true">&times;</span>
-				  </button>
-				</div>
-				<?php endif; ?>
 				<div class="login100-pic js-tilt" data-tilt>
 					<img src="assets/img/3.png" alt="IMG">
 				</div>
@@ -114,8 +114,7 @@ if (isset($_POST['login'])) {
 						<i class="fa fa-long-arrow-right m-l-5" aria-hidden="true"></i>
 					</a>
 				</div>
-				<br><br><br>
-			</form>
+				</form>
 		</div>
 	</div>
 </div>

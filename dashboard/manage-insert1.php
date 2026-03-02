@@ -8,6 +8,10 @@ include_once 'dbCon.php';
 $con = connect();
 
 if (isset($_POST['regasres'])) {
+    // Where to send the user back on error or success (role-aware)
+    $back = ($_SESSION['role'] == 1) ? 'reg.php'   : '../upload.php';
+    $done = ($_SESSION['role'] == 1) ? 'index.php' : '../index.php';
+
     // Cast all IDs to int — they're used in the filename and SQL
     $uni_id       = (int) $_POST['uni_name'];
     $college_id   = (int) $_POST['college_name'];
@@ -18,7 +22,7 @@ if (isset($_POST['regasres'])) {
 
     if (!$uni_id || !$college_id || !$depart_id || !$subject_id || !$semester || !$notemaker_id) {
         echo '<script>alert("Invalid form data. Please select all fields.")</script>';
-        echo '<script>window.location="reg.php"</script>';
+        echo '<script>window.location="' . $back . '"</script>';
         exit;
     }
 
@@ -40,7 +44,7 @@ if (isset($_POST['regasres'])) {
 
             if (!move_uploaded_file($file_tmp, "$targetDirectory/$file_name")) {
                 echo '<script>alert("File could not be saved. Check server permissions.")</script>';
-                echo '<script>window.location="reg.php"</script>';
+                echo '<script>window.location="' . $back . '"</script>';
                 exit;
             }
 
@@ -48,20 +52,20 @@ if (isset($_POST['regasres'])) {
             $stmt->bind_param('iiiiiis', $uni_id, $college_id, $depart_id, $semester, $subject_id, $notemaker_id, $approved_status, $file_name);
             if ($stmt->execute()) {
                 echo '<script>alert("Note added successfully")</script>';
-                echo '<script>window.location="index.php"</script>';
+                echo '<script>window.location="' . $done . '"</script>';
             } else {
                 error_log('Note insert DB error: ' . $con->error);
                 echo '<script>alert("Database error. Please try again.")</script>';
-                echo '<script>window.location="reg.php"</script>';
+                echo '<script>window.location="' . $back . '"</script>';
             }
             $stmt->close();
         } else {
             echo '<script>alert("Only PDF files are allowed.")</script>';
-            echo '<script>window.location="reg.php"</script>';
+            echo '<script>window.location="' . $back . '"</script>';
         }
     } else {
         echo '<script>alert("No file uploaded or upload error.")</script>';
-        echo '<script>window.location="reg.php"</script>';
+        echo '<script>window.location="' . $back . '"</script>';
     }
 }
 ?>

@@ -1,4 +1,6 @@
-<?php session_start(); ?>
+<?php
+// Session is started by security.php — do not call session_start() here.
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
