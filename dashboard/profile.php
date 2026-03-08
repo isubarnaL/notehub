@@ -239,7 +239,6 @@ else{	echo '<script>window.location="login.php"</script>';} ?>
 
       <?php include 'template/right-bar.php'; ?>
 
-    <?php include 'template/script-res.php'; ?>
   </body>
 </html>
 

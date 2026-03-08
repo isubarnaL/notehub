@@ -37,14 +37,11 @@
 		
 
 		<!-- Theme Custom CSS -->
-		<link rel="stylesheet" href="assets/stylesheets/theme-custom.css">
+		<link rel="stylesheet" href="assets/stylesheets/theme-custom.css" />
 
-		<!--<link href="https://pro-next.fontawesome.com/releases/v5.7.2/css/all.css" data-prerender="keep" rel="stylesheet">
+		<!--<link href="https://pro-next.fontawesome.com/releases/v5.7.2/css/all.css" data-prerender="keep" rel="stylesheet"> -->
 
-		<!-- Head Libs -->
-         <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9250586361422788"
-     crossorigin="anonymous"></script>
-            <!-- Google tag (gtag.js) -->
+         <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9250586361422788" crossorigin="anonymous"></script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-ST1SXNZD8B"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
@@ -53,6 +50,7 @@
 
   gtag('config', 'G-ST1SXNZD8B');
 </script>
+<script src="assets/vendor/jquery/jquery.js"></script>
 		<script src="assets/vendor/modernizr/modernizr.js"></script>
         <script src="https://unpkg.com/dropzone@6.0.0-beta.1/dist/dropzone-min.js"></script>
         <link href="https://unpkg.com/dropzone@6.0.0-beta.1/dist/dropzone.css" rel="stylesheet" type="text/css" />

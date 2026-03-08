@@ -108,6 +108,5 @@ $tok = csrf_token();
 	       }
    		</script>
 
-		<?php include 'template/script-res.php'; ?>
 	</body>
 </html>

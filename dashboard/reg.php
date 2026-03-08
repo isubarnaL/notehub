@@ -147,6 +147,5 @@ $notemakers= $con->query("SELECT notemaker_id, notemaker_name FROM `notemaker_ta
        }
 		</script>
 
-	<?php include 'template/script-res.php'; ?>
 	</body>
 </html>
