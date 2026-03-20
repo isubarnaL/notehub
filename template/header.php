@@ -1,4 +1,3 @@
-<!-- header.php -->
 <?php include_once __DIR__ . '/../security.php'; ?>
 <!DOCTYPE html>
 <html lang="en">

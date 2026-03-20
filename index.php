@@ -1,4 +1,3 @@
-<!-- index.php -->
 <?php include 'template/header.php'; ?>
     <body id="page-top">
     <?php include 'template/nav-bar-h.php'; ?>

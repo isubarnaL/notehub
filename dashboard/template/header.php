@@ -52,7 +52,6 @@
 </script>
 <script src="assets/vendor/jquery/jquery.js"></script>
 		<script src="assets/vendor/modernizr/modernizr.js"></script>
-        <script src="https://unpkg.com/dropzone@6.0.0-beta.1/dist/dropzone-min.js"></script>
-        <link href="https://unpkg.com/dropzone@6.0.0-beta.1/dist/dropzone.css" rel="stylesheet" type="text/css" />
-        <script src="https://kit.fontawesome.com/0340f3d315.js" crossorigin="anonymous"></script>
+		<script>if(typeof Modernizr === 'undefined'){ window.Modernizr = { overflowscrolling: false }; }</script>
+<script src="https://kit.fontawesome.com/0340f3d315.js" crossorigin="anonymous"></script>
 	</head>
